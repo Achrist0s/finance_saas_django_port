@@ -1,0 +1,22 @@
+
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-6">Analytics</h1>
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50"><tr><th class="text-left p-3">Category</th><th class="text-right p-3">Income</th><th class="text-right p-3">Expense</th></tr></thead>
+    <tbody>
+      {% for row in by_category %}
+      <tr class="border-t">
+        <td class="p-3">{{ row.category__name|default:'—' }}</td>
+        <td class="p-3 text-right">{{ row.income|default:0 }}</td>
+        <td class="p-3 text-right">{{ row.expense|default:0 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td class="p-3" colspan="3">No data.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
