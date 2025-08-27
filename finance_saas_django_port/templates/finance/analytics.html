@@ -1,22 +1,129 @@
-
 {% extends 'base.html' %}
-{% block title %}Analytics{% endblock %}
+{% load static %}
+
+{% block title %}Analytics - FinanceTracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+{% endblock %}
+
 {% block content %}
-<h1 class="text-2xl font-semibold mb-6">Analytics</h1>
-<div class="bg-white rounded-xl shadow overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-slate-50"><tr><th class="text-left p-3">Category</th><th class="text-right p-3">Income</th><th class="text-right p-3">Expense</th></tr></thead>
-    <tbody>
-      {% for row in by_category %}
-      <tr class="border-t">
-        <td class="p-3">{{ row.category__name|default:'—' }}</td>
-        <td class="p-3 text-right">{{ row.income|default:0 }}</td>
-        <td class="p-3 text-right">{{ row.expense|default:0 }}</td>
-      </tr>
-      {% empty %}
-      <tr><td class="p-3" colspan="3">No data.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="app-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1>Analytics</h1>
+                <p class="page-subtitle">Detailed insights into your financial patterns.</p>
+            </div>
+            <select class="period-select" onchange="updateAnalytics(this.value)">
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 3 months</option>
+                <option value="180">Last 6 months</option>
+                <option value="365">Last year</option>
+            </select>
+        </div>
+
+        <div class="analytics-grid">
+            <!-- Expense Breakdown -->
+            <div class="card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                    </svg>
+                    Expense Breakdown
+                </h3>
+                <div class="expense-breakdown">
+                    {% for expense in expense_breakdown %}
+                    <div class="expense-item">
+                        <div class="expense-left">
+                            <div class="expense-color" style="background-color: {{ expense.color }};"></div>
+                            <span class="expense-name">{{ expense.category }}</span>
+                        </div>
+                        <div class="expense-right">
+                            <span class="expense-amount">${{ expense.amount|floatformat:2 }}</span>
+                            <span class="expense-percentage">{{ expense.percentage|floatformat:1 }}%</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Monthly Trends -->
+            <div class="card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                        <polyline points="17,6 23,6 23,12"/>
+                    </svg>
+                    Monthly Trends
+                </h3>
+                <div class="trends-list">
+                    <div class="trend-item">
+                        <span>Average Monthly Income</span>
+                        <span class="trend-value positive">${{ avg_monthly_income|floatformat:2 }}</span>
+                    </div>
+                    <div class="trend-item">
+                        <span>Average Monthly Expenses</span>
+                        <span class="trend-value negative">${{ avg_monthly_expenses|floatformat:2 }}</span>
+                    </div>
+                    <div class="trend-item">
+                        <span>Average Monthly Savings</span>
+                        <span class="trend-value neutral">${{ avg_monthly_savings|floatformat:2 }}</span>
+                    </div>
+                    <div class="trend-item">
+                        <span>Savings Rate</span>
+                        <span class="trend-value positive">{{ savings_rate|floatformat:1 }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Spending Pattern -->
+        <div class="card">
+            <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Weekly Spending Pattern
+            </h3>
+            <div class="weekly-chart">
+                {% for day in weekly_spending %}
+                <div class="weekly-bar">
+                    <div class="weekly-bar-fill" style="height: {{ day.percentage }}%;"></div>
+                    <span class="weekly-label">{{ day.day }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Financial Goals -->
+        <div class="goals-grid">
+            {% for goal in financial_goals %}
+            <div class="goal-card">
+                <h4>{{ goal.name }}</h4>
+                <div class="goal-progress">
+                    <div class="goal-info">
+                        <span>Progress</span>
+                        <span>${{ goal.current|floatformat:2 }} / ${{ goal.target|floatformat:2 }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {{ goal.color }}" style="width: {{ goal.percentage }}%;"></div>
+                    </div>
+                    <div class="goal-percentage">{{ goal.percentage|floatformat:0 }}% complete</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/analytics.js' %}"></script>
 {% endblock %}

@@ -1,42 +1,125 @@
-
 {% extends 'base.html' %}
-{% block title %}Transactions{% endblock %}
+{% load static %}
+
+{% block title %}Transactions - FinanceTracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/transactions.css' %}">
+{% endblock %}
+
 {% block content %}
-<h1 class="text-2xl font-semibold mb-6">Transactions</h1>
-<div class="grid md:grid-cols-3 gap-6">
-  <div class="md:col-span-2 bg-white rounded-xl shadow overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-50">
-        <tr>
-          <th class="text-left p-3">Date</th>
-          <th class="text-left p-3">Type</th>
-          <th class="text-left p-3">Category</th>
-          <th class="text-left p-3">Description</th>
-          <th class="text-right p-3">Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in transactions %}
-        <tr class="border-t">
-          <td class="p-3">{{ t.date }}</td>
-          <td class="p-3">{{ t.type }}</td>
-          <td class="p-3">{{ t.category }}</td>
-          <td class="p-3">{{ t.description }}</td>
-          <td class="p-3 text-right">{{ t.amount }}</td>
-        </tr>
-        {% empty %}
-        <tr><td class="p-3" colspan="5">No transactions yet.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div class="bg-white rounded-xl shadow p-4">
-    <h2 class="font-semibold mb-3">Add Transaction</h2>
-    <form method="post" class="space-y-3">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button class="px-4 py-2 rounded bg-slate-900 text-white">Save</button>
-    </form>
-  </div>
+<div class="app-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1>Transactions</h1>
+                <p class="page-subtitle">Manage all your financial transactions.</p>
+            </div>
+            <button class="btn-primary" onclick="openModal('transactionModal')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Transaction
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="filters">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search transactions..." oninput="filterTransactions()">
+                </div>
+                <select id="categoryFilter" onchange="filterTransactions()">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="typeFilter" onchange="filterTransactions()">
+                    <option value="">All Types</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        {% for transaction in transactions %}
+                        <tr data-category="{{ transaction.category.name }}" data-type="{{ transaction.type }}">
+                            <td>
+                                <div class="transaction-description">
+                                    <div class="transaction-type-icon {{ transaction.type }}">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            {% if transaction.type == 'income' %}
+                                                <path d="m7 7 10 10M7 17l10-10"/>
+                                            {% else %}
+                                                <path d="m17 7-10 10M7 7l10 10"/>
+                                            {% endif %}
+                                        </svg>
+                                    </div>
+                                    <span>{{ transaction.description }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="transaction-category">{{ transaction.category.name }}</span>
+                            </td>
+                            <td>
+                                <span class="transaction-type {{ transaction.type }}">{{ transaction.type|title }}</span>
+                            </td>
+                            <td>
+                                <span class="transaction-amount {{ transaction.type }}">
+                                    {% if transaction.type == 'income' %}+{% endif %}${{ transaction.amount|floatformat:2 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="transaction-date">{{ transaction.date|date:"M d, Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="transaction-actions">
+                                    <button class="action-btn edit" onclick="editTransaction({{ transaction.id }})">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="action-btn delete" onclick="deleteTransaction({{ transaction.id }})">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3,6 5,6 21,6"/>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
+
+{% include 'partials/transaction_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/transactions.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
 {% endblock %}

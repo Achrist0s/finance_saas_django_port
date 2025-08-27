@@ -1,0 +1,244 @@
+/* Analytics Page Styles */
+.period-select {
+    padding: 8px 12px;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.period-select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.expense-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: rgba(51, 65, 85, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.expense-item:hover {
+    background-color: rgba(51, 65, 85, 0.5);
+    transform: translateX(4px);
+}
+
+.expense-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.expense-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.expense-name {
+    color: #cbd5e1;
+}
+
+.expense-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.expense-amount {
+    color: white;
+    font-weight: 500;
+}
+
+.expense-percentage {
+    color: #64748b;
+    font-size: 14px;
+    width: 48px;
+    text-align: right;
+}
+
+.trends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: rgba(51, 65, 85, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.trend-item:hover {
+    background-color: rgba(51, 65, 85, 0.5);
+    transform: translateX(4px);
+}
+
+.trend-item span:first-child {
+    color: #cbd5e1;
+}
+
+.trend-value {
+    font-weight: 600;
+}
+
+.trend-value.positive {
+    color: #10b981;
+}
+
+.trend-value.negative {
+    color: #ef4444;
+}
+
+.trend-value.neutral {
+    color: #3b82f6;
+}
+
+.weekly-chart {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    height: 128px;
+    align-items: end;
+    padding: 16px 0;
+}
+
+.weekly-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.weekly-bar-fill {
+    width: 100%;
+    background: linear-gradient(to top, #8b5cf6, #3b82f6);
+    border-radius: 4px 4px 0 0;
+    min-height: 16px;
+    transition: all 0.2s;
+}
+
+.weekly-bar:hover .weekly-bar-fill {
+    background: linear-gradient(to top, #7c3aed, #2563eb);
+}
+
+.weekly-label {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.goals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.goal-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.2s;
+}
+
+.goal-card:hover {
+    border-color: #475569;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.goal-card h4 {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.goal-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.goal-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.goal-info span:first-child {
+    color: #64748b;
+}
+
+.goal-info span:last-child {
+    color: #64748b;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-fill.green {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.progress-fill.blue {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.progress-fill.purple {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+.goal-percentage {
+    text-align: right;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .goals-grid {
+        grid-template-columns: 1fr;
+    }
+}

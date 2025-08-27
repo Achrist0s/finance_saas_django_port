@@ -1,29 +1,16 @@
-
-{% load static %}
-<!doctype html>
-<html lang="uk">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>{% block title %}Finance SaaS{% endblock %}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinanceTracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% load static %}{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-slate-50">
-  <div class="min-h-screen flex">
-    <aside class="w-64 bg-white border-r">
-      <div class="p-4 font-bold text-xl">💰 Finance</div>
-      <nav class="px-2 space-y-1">
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:dashboard' %}">Dashboard</a>
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:transactions' %}">Transactions</a>
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:budgets' %}">Budgets</a>
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:categories' %}">Categories</a>
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:analytics' %}">Analytics</a>
-        <a class="block px-3 py-2 rounded hover:bg-slate-100" href="{% url 'finance:settings' %}">Settings</a>
-      </nav>
-    </aside>
-    <main class="flex-1 p-6">
-      {% block content %}{% endblock %}
-    </main>
-  </div>
+<body>
+    {% block content %}{% endblock %}
+    
+    <script src="{% load static %}{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

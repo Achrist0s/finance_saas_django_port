@@ -1,46 +1,267 @@
-
 {% extends 'base.html' %}
-{% block title %}Dashboard{% endblock %}
+{% load static %}
+
+{% block title %}Dashboard - FinanceTracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
 {% block content %}
-<h1 class="text-2xl font-semibold mb-6">Dashboard</h1>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <div class="bg-white p-4 rounded-xl shadow">
-    <div class="text-sm text-slate-500">Income</div>
-    <div class="text-2xl font-bold">{{ income }}</div>
-  </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <div class="text-sm text-slate-500">Expenses</div>
-    <div class="text-2xl font-bold">{{ expenses }}</div>
-  </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <div class="text-sm text-slate-500">Balance</div>
-    <div class="text-2xl font-bold">{{ balance }}</div>
-  </div>
+<div class="app-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="page-subtitle">Welcome back! Here's your financial overview.</p>
+            </div>
+            <button class="btn-primary" onclick="openModal('transactionModal')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Transaction
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stats-card blue">
+                <div class="stats-header">
+                    <div class="stats-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="stats-change positive">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                            <polyline points="17,6 23,6 23,12"/>
+                        </svg>
+                        +12.5%
+                    </div>
+                </div>
+                <div class="stats-content">
+                    <h3>Balance</h3>
+                    <p class="stats-value">${{ balance|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <div class="stats-card green">
+                <div class="stats-header">
+                    <div class="stats-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                            <polyline points="17,6 23,6 23,12"/>
+                        </svg>
+                    </div>
+                    <div class="stats-change positive">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                            <polyline points="17,6 23,6 23,12"/>
+                        </svg>
+                        +8.2%
+                    </div>
+                </div>
+                <div class="stats-content">
+                    <h3>Income</h3>
+                    <p class="stats-value">${{ total_income|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <div class="stats-card red">
+                <div class="stats-header">
+                    <div class="stats-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,18 13.5,8.5 8.5,13.5 1,6"/>
+                            <polyline points="17,18 23,18 23,12"/>
+                        </svg>
+                    </div>
+                    <div class="stats-change negative">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,18 13.5,8.5 8.5,13.5 1,6"/>
+                            <polyline points="17,18 23,18 23,12"/>
+                        </svg>
+                        -3.1%
+                    </div>
+                </div>
+                <div class="stats-content">
+                    <h3>Expenses</h3>
+                    <p class="stats-value">${{ total_expenses|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <div class="stats-card purple">
+                <div class="stats-header">
+                    <div class="stats-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="stats-change positive">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                            <polyline points="17,6 23,6 23,12"/>
+                        </svg>
+                        +5.4%
+                    </div>
+                </div>
+                <div class="stats-content">
+                    <h3>Budget</h3>
+                    <p class="stats-value">${{ total_budget|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Overview -->
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="20" x2="12" y2="10"/>
+                                    <line x1="18" y1="20" x2="18" y2="4"/>
+                                    <line x1="6" y1="20" x2="6" y2="16"/>
+                                </svg>
+                                Financial Overview
+                            </h3>
+                            <p class="card-subtitle">Monthly income vs expenses</p>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color green"></div>
+                                <span>Income</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color red"></div>
+                                <span>Expenses</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart" id="financialChart">
+                        <!-- Chart will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-widgets">
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        Budget Overview
+                    </h3>
+                    <div class="budget-list">
+                        {% for budget in budgets %}
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <span class="budget-name">{{ budget.category.name }}</span>
+                                <span class="budget-amount">${{ budget.spent|floatformat:2 }} / ${{ budget.amount|floatformat:2 }}</span>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="budget-progress-bar">
+                                    <div class="budget-progress-fill {% if budget.percentage > 100 %}over{% else %}normal{% endif %}" 
+                                         style="width: {{ budget.percentage|floatformat:0 }}%;"></div>
+                                </div>
+                                <span class="budget-percentage">{{ budget.percentage|floatformat:0 }}%</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        Recent Transactions
+                    </h3>
+                    <a href="{% url 'transactions' %}" class="view-all-link">View All</a>
+                </div>
+                <div class="transactions-list">
+                    {% for transaction in recent_transactions %}
+                    <div class="transaction-item">
+                        <div class="transaction-left">
+                            <div class="transaction-icon {{ transaction.type }}">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    {% if transaction.type == 'income' %}
+                                        <path d="m7 7 10 10M7 17l10-10"/>
+                                    {% else %}
+                                        <path d="m17 7-10 10M7 7l10 10"/>
+                                    {% endif %}
+                                </svg>
+                            </div>
+                            <div class="transaction-details">
+                                <h4>{{ transaction.description }}</h4>
+                                <p>{{ transaction.category.name }}</p>
+                            </div>
+                        </div>
+                        <div class="transaction-right">
+                            <p class="transaction-amount {{ transaction.type }}">
+                                {% if transaction.type == 'income' %}+{% endif %}${{ transaction.amount|floatformat:2 }}
+                            </p>
+                            <p class="transaction-date">{{ transaction.date|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="quick-action-btn green" onclick="openTransactionModal('income')">
+                        <div class="quick-action-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </div>
+                        Add Income
+                    </button>
+                    <button class="quick-action-btn red" onclick="openTransactionModal('expense')">
+                        <div class="quick-action-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </div>
+                        Add Expense
+                    </button>
+                    <button class="quick-action-btn purple" onclick="window.location.href='{% url 'budgets' %}'">
+                        <div class="quick-action-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        Set Budget
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
-<h2 class="text-xl font-semibold mt-8 mb-3">Recent Transactions</h2>
-<div class="bg-white rounded-xl shadow overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-slate-50">
-      <tr>
-        <th class="text-left p-3">Date</th>
-        <th class="text-left p-3">Type</th>
-        <th class="text-left p-3">Category</th>
-        <th class="text-right p-3">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in recent %}
-      <tr class="border-t">
-        <td class="p-3">{{ t.date }}</td>
-        <td class="p-3">{{ t.type }}</td>
-        <td class="p-3">{{ t.category }}</td>
-        <td class="p-3 text-right">{{ t.amount }}</td>
-      </tr>
-      {% empty %}
-      <tr><td class="p-3" colspan="4">No transactions yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+{% include 'partials/transaction_modal.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
 {% endblock %}
